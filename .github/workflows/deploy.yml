@@ -1,0 +1,27 @@
+name: Deploy EA Update
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Update version file
+        run: |
+          echo "${{ github.event.release.tag_name }}" > version.txt
+          aws s3 cp version.txt s3://mql4-autoupdate-drl-xp27-q/version.txt
+      
+      - name: Upload EA file
+        run: |
+          aws s3 cp DrL-Xp27-Q.ex4 s3://mql4-autoupdate-drl-xp27-q/DrL-Xp27-Q.ex4
