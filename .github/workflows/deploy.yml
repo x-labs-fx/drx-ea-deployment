@@ -24,10 +24,14 @@ jobs:
           echo "$VERSION" > version.txt
           aws s3 cp version.txt s3://mql4-autoupdate-drl-xp27-q/version.txt
       
-      - name: Upload EA file
+      - name: Download EA file from release
+        run: |
+          # Wait a moment for GitHub to process the release asset
+          sleep 10
+          # Download the EA file from the release
+          curl -L -o DrL-Xp27-Q.ex4 \
+            "https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/DrL-Xp27-Q.ex4"
+          
+      - name: Upload EA file to S3
         run: |
           aws s3 cp DrL-Xp27-Q.ex4 s3://mql4-autoupdate-drl-xp27-q/DrL-Xp27-Q.ex4
-          
-      - name: Invalidate CloudFront
-        run: |
-          aws cloudfront create-invalidation --distribution-id E1ROE0IIO44G4U --paths "/version.txt" "/DrL-Xp27-Q.ex4"
