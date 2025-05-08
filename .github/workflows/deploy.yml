@@ -35,3 +35,7 @@ jobs:
       - name: Upload EA file to S3
         run: |
           aws s3 cp DrL-Xp27-Q.ex4 s3://mql4-autoupdate-drl-xp27-q/DrL-Xp27-Q.ex4
+          
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation --distribution-id E1ROE0IIO44G4U --paths "/version.txt" "/DrL-Xp27-Q.ex4"
